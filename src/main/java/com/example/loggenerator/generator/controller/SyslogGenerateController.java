@@ -1,26 +1,50 @@
 package com.example.loggenerator.generator.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.example.loggenerator.generator.model.task.LogTask;
+import com.example.loggenerator.generator.model.config.SyslogTaskConfig;
+import com.example.loggenerator.generator.service.SyslogGenerator;
+import com.example.loggenerator.generator.service.TaskRegistry;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/syslog")
 @Tag(name = "Syslog Generator", description = "Generate Syslog messages")
 public class SyslogGenerateController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final TaskRegistry taskRegistry;
 
-    // syslog4j를 이용해서 syslog 메시지를 생성한다.
+    public SyslogGenerateController(TaskRegistry taskRegistry) {
+        this.taskRegistry = taskRegistry;
+    }
 
     @PostMapping("/generate")
-    public String generateSyslog() {
-        logger.info("Syslog message generated");
-        return "Syslog message generated";
+    public String generateSyslog(@RequestBody SyslogTaskConfig config) {
+        LogTask task = new SyslogGenerator(config);
+        taskRegistry.registerAndStart(task);
+        return task.getTaskId();
+    }
+
+    @PostMapping("/{taskId}/stop")
+    public void stopSyslog(@PathVariable String taskId) {
+        taskRegistry.stop(taskId);
+    }
+
+    @GetMapping("/{taskId}")
+    public String getTaskState(@PathVariable String taskId) {
+        LogTask task = taskRegistry.getTask(taskId);
+        if (task != null) {
+            return task.getState().toString();
+        }
+        return "Task not found";
+    }
+
+    @GetMapping("/tasks")
+    public Map<String, String> getAllTasks() {
+        return taskRegistry.getAllTasks().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getState().toString()));
     }
 }
