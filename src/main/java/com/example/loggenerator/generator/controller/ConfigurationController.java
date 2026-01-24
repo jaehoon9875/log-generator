@@ -31,8 +31,9 @@ public class ConfigurationController {
 
     @PostMapping("/change-source")
     @Operation(summary = "Set Log Source", description = "Set Log Source")
-    public ResponseEntity<String> updateSource(@RequestParam LogSourceType newSource) {
-        if (systemConfig.getLogSource().equals(newSource)) {
+    public synchronized ResponseEntity<String> updateSource(@RequestParam LogSourceType newSource)
+    {
+        if (systemConfig.getLogSource() == newSource) {
             String message = "Log source is already set to " + newSource + ". No changes were made.";
             return new ResponseEntity<>(message, HttpStatus.OK);
         }
