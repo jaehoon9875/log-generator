@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,19 +23,33 @@ public class ConfigurationController {
         this.systemConfig = systemConfig;
     }
 
-    @GetMapping("/source")
+    @GetMapping("/show-current-source")
     @Operation(summary = "Get Log Source", description = "Get Log Source")
-    public LogSourceType getLogSource() {
-        return systemConfig.getLogSource();
+    public String getLogSource() {
+        return "System Log Source : " + systemConfig.getLogSource().toString();
     }
 
-    @PostMapping("/source")
+    @PostMapping("/change-source")
     @Operation(summary = "Set Log Source", description = "Set Log Source")
-    public String updateSource(@RequestParam LogSourceType newSource)
-    {
+    public ResponseEntity<String> updateSource(@RequestParam LogSourceType newSource) {
+        if (systemConfig.getLogSource().equals(newSource)) {
+            String message = "Log source is already set to " + newSource + ". No changes were made.";
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        }
+
+        if (!newSource.isSupported()) {
+            String errorMessage = "Unsupported log source type: " + newSource;
+            logger.warn(errorMessage);
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        }
         String before = systemConfig.getLogSource().toString();
         systemConfig.setLogSource(newSource);
-        return "System Log Source Changed from" + before + " to " + newSource.toString();
+
+        String message = "System Log Source Changed from " + before + " to " + newSource.toString();
+
+        logger.info(message);
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
 }

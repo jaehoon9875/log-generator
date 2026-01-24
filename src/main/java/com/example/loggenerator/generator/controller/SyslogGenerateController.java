@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @Tag(name = "Syslog Generator", description = "Generate Syslog messages")
 public class SyslogGenerateController {
 
-    // test
     private final TaskRegistry taskRegistry;
 
     public SyslogGenerateController(TaskRegistry taskRegistry) {
