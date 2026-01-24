@@ -1,6 +1,7 @@
 package com.example.loggenerator.generator.model.config;
 
 import com.example.loggenerator.generator.define.LogFormatDefine;
+import com.example.loggenerator.generator.define.SyslogFormatDefine;
 import org.productivity.java.syslog4j.SyslogConstants;
 
 public class SyslogTaskConfig extends TaskConfig {
@@ -8,7 +9,7 @@ public class SyslogTaskConfig extends TaskConfig {
     private String host = "localhost";
     private int port = 5140;
     private String protocol = SyslogConstants.UDP;
-    private LogFormatDefine.SyslogFormat syslogFormat;
+    private SyslogFormatDefine syslogFormat;
 
     public SyslogTaskConfig() {
         setMessage("This is a test syslog message");
@@ -38,11 +39,11 @@ public class SyslogTaskConfig extends TaskConfig {
         this.protocol = protocol;
     }
 
-    public void setSyslogFormat(LogFormatDefine.SyslogFormat syslogFormat) {
+    public void setSyslogFormat(SyslogFormatDefine syslogFormat) {
         this.syslogFormat = syslogFormat;
     }
 
-    public LogFormatDefine.SyslogFormat getSyslogFormat() {
+    public SyslogFormatDefine getSyslogFormat() {
         return syslogFormat;
     }
 }

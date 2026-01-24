@@ -14,8 +14,4 @@ public class LogFormatDefine {
         PLAIN_TEXT  // 일반 텍스트 형식
     }
 
-    public enum SyslogFormat {
-        RFC_3164,   // RFC 3164 형식
-        RFC_5424   // RFC 5424 형식
-    }
 }
