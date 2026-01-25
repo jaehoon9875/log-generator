@@ -1,6 +1,6 @@
 package com.example.loggenerator.generator.model.config;
 
-public class TaskConfig {
+public abstract class TaskConfig {
 
     protected int eps = 1; // Events Per Second
     protected String message = "this is test message";
